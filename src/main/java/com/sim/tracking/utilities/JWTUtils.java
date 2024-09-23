@@ -9,6 +9,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
+import com.sim.tracking.model.bo.UserBO;
 
 public class JWTUtils {
 
@@ -25,24 +26,23 @@ public class JWTUtils {
         }
     }
 
-    /* public static String createAccessOrRefreshToken(UserTokenObject user, CompanyTokenObject company,
-                                                    LocationTokenObject location, String key, Integer expiryInDays) throws TokenException {
+     public static String createAccessOrRefreshToken(UserBO user, String key, Integer expiryInDays) throws Exception {
         try
         {
             Algorithm algorithmHS = Algorithm.HMAC256(key);
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, expiryInDays);
             Gson gson = new Gson();
-            String token = JWT.create().withClaim(Attributes.USER.getName(), gson.toJson(user))
-                    .withClaim(Attributes.COMPANY.getName(), gson.toJson(company))
-                    .withClaim(Attributes.LOCATION.getName(), gson.toJson(location)).withExpiresAt(cal.getTime())
+            String token = JWT.create().withClaim(user.getUsername(), gson.toJson(user))
+                    .withClaim(key, new Date())
+                    .withExpiresAt(cal.getTime())
                     .sign(algorithmHS);
 
             return token;
         }catch(Exception e){
-            throw new TokenException("Error generating token");
+            throw new Exception("Error generating token");
         }
-    } */
+    }
 
     public static Map<String, Claim> checkToken(String token, String key) throws Exception {
         try {

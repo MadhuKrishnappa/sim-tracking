@@ -37,6 +37,9 @@ public class User implements Serializable {
     @Column(name = "mobile")
     private String mobile;
 
+    @Column(name = "partner_id")
+    private BigInteger partnerId;
+
     @Column(name = "email_id")
     private String emailId;
 

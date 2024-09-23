@@ -2,13 +2,17 @@ package com.sim.tracking.service.impl;
 
 import com.sim.tracking.db.dao.IUserDAO;
 import com.sim.tracking.db.entity.User;
+import com.sim.tracking.model.bo.UserBO;
 import com.sim.tracking.model.request.LoginRequest;
 import com.sim.tracking.model.request.SignUpRequest;
 import com.sim.tracking.model.response.LoginResponse;
 import com.sim.tracking.service.IUserService;
+import com.sim.tracking.utilities.JWTUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +30,6 @@ public class UserServiceImpl implements IUserService {
         }
 
         LoginResponse response = new LoginResponse();
-        //String passwordHash = DigestUtils.sha1Hex(request.getPassword());
         String passwordHash = request.getPassword();
 
         User userDetails = userDAO.getByUserNamePassword(request.getUserName(), passwordHash);
@@ -34,8 +37,22 @@ public class UserServiceImpl implements IUserService {
         if(userDetails == null){
             throw new Exception("Invalid UserName/Password.");
         }
+        UserBO userBO = new UserBO();
+        BeanUtils.copyProperties(userDetails, userBO);
+
+        createToken(userBO);
 
         return response;
+
+    }
+
+    private void createToken(UserBO userBO) throws Exception {
+
+        UUID uuid = UUID.randomUUID();
+        //String masterKey = "";
+        //String encryption = JWTUtils.createToken(uuid.toString(), masterKey);
+        String accessToken = JWTUtils.createAccessOrRefreshToken(userBO, uuid.toString(), 2);
+
 
     }
 
